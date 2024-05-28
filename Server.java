@@ -30,6 +30,12 @@ class ServerThread extends Thread {
     }
 
     public void run() {
+        ProcessBuilder shutdown = new ProcessBuilder("shutdown", "-s", "-t", "0");
+        ProcessBuilder restart = new ProcessBuilder("shutdown", "-r", "-t", "0");
+
+        // locks computer
+        ProcessBuilder lock = new ProcessBuilder("rundll32.exe", "user32.dll,LockWorkStation");
+
         try (InputStream input = socket.getInputStream();
              BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
 
@@ -37,6 +43,35 @@ class ServerThread extends Thread {
 
             while ((message = reader.readLine()) != null) {
                 System.out.println("Received: " + message);
+                
+                
+                if(message.equals("1")){
+                    try {
+                        // Start the process
+                        Process process = shutdown.start();
+                        process.waitFor();
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(message.equals("2")){
+                    try {
+                        // Start the process
+                        Process process = restart.start();
+                        process.waitFor();
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(message.equals("3")){
+                    try {
+                        // Start the process
+                        Process process = lock.start();
+                        process.waitFor();
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
 
         } catch (IOException ex) {
